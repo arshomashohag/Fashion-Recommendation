@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiLinkService } from '../api-link.service';
 import { ApiService } from '../api.service';
@@ -25,8 +25,10 @@ export class SearchComponent implements OnInit {
 
   busy: Subscription;
   apiLink: string = baseLocation.base_backoffice;
+  p: any;
 
   ngOnInit() {
+    this.p = 1;
     this.recommendedImages = [];
     this.queryImageDetails = null;
 
@@ -34,49 +36,60 @@ export class SearchComponent implements OnInit {
       (params: any) => {
         console.log(params)
         this.queryImageId = params['image_id'];
-        this.busy = this.apiService.fetchRecommendations(this.queryImageId).subscribe(
-          (data: any) => {
+        this.searchSimilarProduct();
+      }
+    )
+  }
 
-            if (data.success) {
+  searchForThisItem(image_id){
+    this.p = 1;
+    this.queryImageId = image_id;
+    this.searchSimilarProduct();
+  }
 
-              let all_images = data.data;
-              this.queryImageDetails = data.query_image;
+  searchSimilarProduct() {
 
-              let meta = data.meta;
-              let cur_image, cur_meta;
- 
-              this.recommendedImages = [];
+    this.busy = this.apiService.fetchRecommendations(this.queryImageId).subscribe(
+      (data: any) => {
 
-              for(let i=1, n = all_images.length; i < n; i++){
-                cur_image = all_images[i]
-                cur_meta = meta.find( (a) => a.image_id == cur_image.image_id )
+        if (data.success) {
 
-                if(cur_meta){
+          let all_images = data.data;
+          this.queryImageDetails = data.query_image;
 
-                  cur_image.article_type = cur_meta.article_type;
-                  cur_image.product_display_name = cur_meta.product_display_name;
-                  this.recommendedImages.push( JSON.parse(JSON.stringify(cur_image)) )
+          let meta = data.meta;
+          let cur_image, cur_meta;
 
-                }
-                 
-              }
+          this.recommendedImages = [];
 
-              this.recommendedImages = this.recommendedImages.slice(0, 20)
+          for (let i = 1, n = all_images.length; i < n; i++) {
+            cur_image = all_images[i]
+            cur_meta = meta.find((a) => a.image_id == cur_image.image_id)
 
-            } else {
+            if (cur_meta) {
 
-              alert('Something wrong!');
+              cur_image.article_type = cur_meta.article_type;
+              cur_image.product_display_name = cur_meta.product_display_name;
+              this.recommendedImages.push(JSON.parse(JSON.stringify(cur_image)))
 
             }
 
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            this.busy.unsubscribe();
           }
-        )
+
+          this.recommendedImages = this.recommendedImages.slice(0, 100)
+
+        } else {
+
+          alert('Something wrong!');
+
+        }
+
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        this.busy.unsubscribe();
       }
     )
   }

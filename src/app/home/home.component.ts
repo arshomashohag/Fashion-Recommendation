@@ -43,10 +43,11 @@ export class HomeComponent implements OnInit {
   gender: any;
 
   searchedImage: any;
-
+  
+  p: any;
 
   ngOnInit() {
-
+    this.p = 1;
     this.masterCategories = [];
     this.subCategories = [];
     this.articleTypes = [];
@@ -176,6 +177,7 @@ export class HomeComponent implements OnInit {
 
     this.busy = this.apiService.searchForProduct(data).subscribe(
       (data: any) => {
+        this.p = 1;
         if (data.success) {
           let prods = data.data;
 
@@ -183,7 +185,7 @@ export class HomeComponent implements OnInit {
           prods.sort((a, b)=>{
             return b.similarity - a.similarity
           })
-          this.products = prods.slice(0, 18);
+          this.products = prods.slice(0, 100);
 
         } else {
           alert(data.message);
@@ -213,5 +215,12 @@ export class HomeComponent implements OnInit {
 
   }
 
+  resetForm(){
+    this.searchedImage = null;
+    console.log('Reseting image')
+    $("#imagePreview").css('background-image', 'url(http://i.pravatar.cc/500?img=7)' );
+    $('#imagePreview').hide();
+    $('#imagePreview').fadeIn(650);
+  }
 
 }

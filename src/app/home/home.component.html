@@ -40,7 +40,7 @@
           <div class="search-panel">
             <form (submit)="search($event)">
               <div class="form-group">
-                  <label>Upload image</label>
+                  <label class="strong">Upload image</label>
                   <div class="avatar-upload">
                     <div class="avatar-edit">
                       <input type='file' name="searched-image" id="imageUpload" accept=".png, .jpg, .jpeg" />
@@ -52,7 +52,7 @@
                     </div>
                   </div> 
               </div>
-              <div class="form-group">
+              <!-- <div class="form-group">
 
                 <label>Master category</label>
                 <input autocomplete="off" class="form-control" [(ngModel)]="masterCategory" type="text"
@@ -72,10 +72,21 @@
                 </div>
 
 
+              </div> -->
+              <div class="form-group">
+                <label class="strong">For</label>
+                <div>
+                  <div *ngFor="let gendr of genders" class="form-check form-check-inline">
+                    <input class="form-check-input" name="gender-radio" type="radio" [(ngModel)]="gender"
+                      id="radio-{{gendr}}" value="{{gendr}}">
+                    <label class="form-check-label" for="radio-{{gendr}}">{{gendr}}</label>
+                  </div>
+                </div>
+
               </div>
 
               <div class="form-group">
-                <label>Sub-category</label>
+                <label class="strong">Category</label>
                 <input autocomplete="off" class="form-control" [(ngModel)]="subCategory" type="text" id="sub-category"
                   name="sub-category" placeholder="Sub category">
 
@@ -94,7 +105,7 @@
               </div>
 
               <div class="form-group">
-                <label>Article type</label>
+                <label class="strong">Item type</label>
                 <input autocomplete="off" class="form-control" [(ngModel)]="articleType" type="text" id="article-type"
                   name="article-type" placeholder="Article type">
 
@@ -113,7 +124,7 @@
               </div>
 
               <div class="form-group">
-                <label>Base color</label>
+                <label class="strong">Color</label>
                 <input autocomplete="off" class="form-control" [(ngModel)]="color" type="text" id="base-color"
                   name="base-colour" placeholder="Color">
 
@@ -131,20 +142,20 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label>Gender</label>
-                <div>
-                  <div *ngFor="let gendr of genders" class="form-check form-check-inline">
-                    <input class="form-check-input" name="gender-radio" type="radio" [(ngModel)]="gender"
-                      id="radio-{{gendr}}" value="{{gendr}}">
-                    <label class="form-check-label" for="radio-{{gendr}}">{{gendr}}</label>
-                  </div>
-                </div>
+              <div class="form-group row">
 
+                <div class="col-md-6">
+                  <button type="submit" class="form-control btn btn-info">Search</button>
+                </div>
+                
+                <div class="col-md-6">
+                  <button type="reset" class="form-control btn btn-warning" (click)="resetForm()">Reset</button>
+                </div>
+                
               </div>
 
 
-              <button type="submit" class="form-control btn btn-info">Search</button>
+              
             </form>
           </div>
 
@@ -152,7 +163,7 @@
         </div>
         <div class="col-lg-9">
           <div class="row">
-            <div *ngFor="let product of products; let ind=index" class="col-lg-4 col-md-6 mb-4 product-card">
+            <div *ngFor="let product of products | paginate: { itemsPerPage: 9, currentPage: p }; let ind=index"  class="col-lg-4 col-md-6 mb-4 product-card">
 
               <a [routerLink]="['/search']" [queryParams]="{ image_id: product.image_id}"
                 (mouseover)="showDetails('in', $event)" (mouseout)="showDetails('out', $event)"><img
@@ -163,13 +174,20 @@
                     <a href="#">{{product.article_type}}</a>
                   </h4>
                   <p class="card-text">{{product.product_display_name}}</p>
+                  <p *ngIf="product.similarity != null" class="card-text">{{product.similarity}}</p>
                 </div>
                 <div class="card-footer">
                   <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
                 </div>
               </div>
             </div>
+            <div *ngIf="products.length == 0" class="col-lg-6 alert alert-danger mb-4">
+               
+                No items found
+               
+            </div> 
           </div>
+          <pagination-controls *ngIf="products.length != 0" (pageChange)="p = $event"></pagination-controls>
         </div>
 
       </div>

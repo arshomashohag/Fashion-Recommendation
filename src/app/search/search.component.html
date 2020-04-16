@@ -31,10 +31,10 @@
   
   <div class="row">
 
-    <div *ngFor="let product of recommendedImages; let ind=index" class="col-lg-3 col-md-4 mb-4 product-card">
+    <div *ngFor="let product of recommendedImages | paginate: { id: 'page_control', itemsPerPage: 16, currentPage: p }; let ind=index" class="col-lg-3 col-md-4 mb-4 product-card">
 
-      <a [routerLink]="['/search']" [queryParams]="{ image_id: product.image_id}" (mouseover)="showDetails('in', $event)" (mouseout)="showDetails('out', $event)"><img
-          class="card-img-custom" src="{{apiLink + '/images/' + product.image_id }}" alt=""></a>
+      <div (click)="searchForThisItem(product.image_id)" style="cursor: pointer;" (mouseover)="showDetails('in', $event)" (mouseout)="showDetails('out', $event)"><img
+          class="card-img-custom" src="{{apiLink + '/images/' + product.image_id }}" alt=""></div>
       <div class="card my-card">
         <div class="card-body my-card-body">
           <h4 class="card-title">
@@ -49,4 +49,5 @@
     </div>
 
   </div>
+  <pagination-controls id="page_control"  (pageChange)="p = $event"></pagination-controls>
 </div>
