@@ -196,7 +196,7 @@ export class HomeComponent implements OnInit {
       },
       () => {
         this.busy.unsubscribe();
-        event.target.reset();
+        // event.target.reset();
       }
     )
   }
