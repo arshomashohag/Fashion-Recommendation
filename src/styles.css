@@ -1,9 +1,35 @@
 /* You can add global styles to this file, and also import other style files */
 /* @import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'); */
 
-body {
-    background-color: #6BA7B6;
-}
+@import url('https://fonts.googleapis.com/css?family=Poppins:200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap');
+
+ 
+  .single-product {
+    border-radius: 1px 1px 3px 3px;
+    padding: 1px;
+    background-color: #f7941d;
+    color: white;
+  }
+
+  .single-product .product-content, .single-product .product-img .product-action, .single-product .product-img .product-action-2 {
+    padding: 0px 10px;
+  }
+
+  .single-product .product-content h3 {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .single-product .product-content h3 a:hover{
+    text-decoration: none;
+    color: #4e4e4e;
+  }
+
+  .popular-slider .single-product .product-img{
+    max-height: 347px;
+    max-width: 261px;
+  }
 
 .product-card {
     height: 300px;

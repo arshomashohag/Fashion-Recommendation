@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SystemJsNgModuleLoader, AfterViewInit } from '@angular/core';
 import { ApiService } from '../api.service';
 import { Subscription } from 'rxjs';
 
@@ -11,7 +11,7 @@ declare var $: any;
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.less']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
 
   constructor(
     private apiService: ApiService
@@ -22,6 +22,9 @@ export class HomeComponent implements OnInit {
   keyword = 'name';
   busy: Subscription;
   apiLink: string = baseLocation.base_backoffice;
+
+  trendingItems: any;
+  middleBanner: any = [];
 
   masterCategories: any;
   masterCategory: any;
@@ -57,43 +60,82 @@ export class HomeComponent implements OnInit {
 
     this.busy = this.apiService.fetchHomePageValues().subscribe(
       (data: any) => {
-        if (data.images) {
-          this.products = data.images;
+        try {
+
+          if (data.success) {
+
+
+            if (data.data.images) {
+              this.products = data.data.images;
+              this.middleBanner = [];
+
+              this.middleBanner.push(this.products[ Math.floor(this.getRandomIntInclusive(1, 99)) ])
+              this.middleBanner.push(this.products[ Math.floor(this.getRandomIntInclusive(1, 99)) ])
+            }
+
+            if (data.data.article_type) {
+              this.articleTypes = data.data.article_type
+              // data.data.article_type.forEach(element => {
+              //   this.articleTypes.push(element.article_type);
+              // });
+            }
+
+            if (data.data.base_colour) {
+              this.baseColours = data.data.base_colour;
+              // data.data.base_colour.forEach(element => {
+              //   this.baseColours.push(element.base_colour);
+              // });
+            }
+
+            if (data.data.gender) {
+              this.genders = data.data.gender;
+              // data.data.gender.forEach(element => {
+              //   this.genders.push(element.gender);
+              // });
+            }
+            if (data.data.master_category) {
+
+              // data.data.master_category.forEach(element => {
+              //   this.masterCategories.push(element.master_category);
+              // });
+              this.masterCategories = data.data.master_category;
+            }
+            if (data.data.sub_category) {
+
+              // data.data.sub_category.forEach(element => {
+              //   this.subCategories.push(element.sub_category);
+              // });
+              this.subCategories = data.data.sub_category;
+            }
+            if (data.data.trending) {
+
+              let trending_items = data.data.trending
+              this.trendingItems = {}
+
+              trending_items.forEach(item => {
+
+                if (!this.trendingItems[item.masterCategory]) {
+                  this.trendingItems[item.masterCategory] = []
+                }
+
+                this.trendingItems[item.masterCategory].push(item);
+
+              });
+
+              console.log(this.trendingItems);
+
+            }
+
+          } else {
+
+            alert(data.message)
+
+          }
+
+        } catch (e) {
+
+          console.log(e)
         }
-
-        if (data.article_type) {
-
-          data.article_type.forEach(element => {
-            this.articleTypes.push(element.article_type);
-          });
-        }
-
-        if (data.base_colour) {
-
-          data.base_colour.forEach(element => {
-            this.baseColours.push(element.base_colour);
-          });
-        }
-
-        if (data.gender) {
-
-          data.gender.forEach(element => {
-            this.genders.push(element.gender);
-          });
-        }
-        if (data.master_category) {
-
-          data.master_category.forEach(element => {
-            this.masterCategories.push(element.master_category);
-          });
-        }
-        if (data.sub_category) {
-
-          data.sub_category.forEach(element => {
-            this.subCategories.push(element.sub_category);
-          });
-        }
-
 
       },
       (error) => {
@@ -101,6 +143,8 @@ export class HomeComponent implements OnInit {
       },
       () => {
         this.busy.unsubscribe();
+
+
       }
     )
 
@@ -125,6 +169,41 @@ export class HomeComponent implements OnInit {
     $("#imageUpload").change((e) => {
       this.readURL(e.target);
     });
+  }
+  ngAfterViewInit() {
+    setTimeout(() => {
+      $('.popular-slider').owlCarousel({
+        items: 1,
+        autoplay: true,
+        autoplayTimeout: 5000,
+        smartSpeed: 400,
+        animateIn: 'fadeIn',
+        animateOut: 'fadeOut',
+        autoplayHoverPause: true,
+        loop: true,
+        nav: true,
+        merge: true,
+        dots: false,
+        navText: ['<i class="ti-angle-left"></i>', '<i class="ti-angle-right"></i>'],
+        responsive: {
+          0: {
+            items: 1,
+          },
+          300: {
+            items: 1,
+          },
+          480: {
+            items: 2,
+          },
+          768: {
+            items: 3,
+          },
+          1170: {
+            items: 4,
+          },
+        }
+      });
+    }, 1000)
   }
 
   showDetails(type, event) {
@@ -221,6 +300,12 @@ export class HomeComponent implements OnInit {
     $("#imagePreview").css('background-image', 'url(http://i.pravatar.cc/500?img=7)' );
     $('#imagePreview').hide();
     $('#imagePreview').fadeIn(650);
+  }
+
+  getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
   }
 
 }
